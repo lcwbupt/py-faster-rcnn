@@ -73,19 +73,15 @@ If you find Faster R-CNN useful in your research, please consider citing:
 
 1. Clone the Faster R-CNN repository
   ```Shell
-  # Make sure to clone with --recursive
-  git clone --recursive https://github.com/rbgirshick/py-faster-rcnn.git
+  git clone https://github.com/lcwbupt/py-faster-rcnn.git
   ```
+  We'll call the directory that you cloned Faster R-CNN into `FRCN_ROOT`
 
-2. We'll call the directory that you cloned Faster R-CNN into `FRCN_ROOT`
-
-   *Ignore notes 1 and 2 if you followed step 1 above.*
-
-   **Note 1:** If you didn't clone Faster R-CNN with the `--recursive` flag, then you'll need to manually clone the `caffe-fast-rcnn` submodule:
-    ```Shell
-    git submodule update --init --recursive
-    ```
-    **Note 2:** The `caffe-fast-rcnn` submodule needs to be on the `faster-rcnn` branch (or equivalent detached state). This will happen automatically *if you followed step 1 instructions*.
+2. Clone the Caffe repository
+  ```Shell
+    cd $RFCN_ROOT
+    git clone -b faster-rcnn https://github.com/lcwbupt/caffe-fast-rcnn.git
+  ```
 
 3. Build the Cython modules
     ```Shell
