@@ -1,3 +1,4 @@
+from .caltech import caltech
 # --------------------------------------------------------
 # Fast R-CNN
 # Copyright (c) 2015 Microsoft
