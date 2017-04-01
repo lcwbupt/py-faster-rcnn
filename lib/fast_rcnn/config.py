@@ -40,6 +40,9 @@ __C.TRAIN.SCALES = (600,)
 # Max pixel size of the longest side of a scaled input image
 __C.TRAIN.MAX_SIZE = 1000
 
+# Resize test images so that its width and height are multiples of ...
+__C.TRAIN.SCALE_MULTIPLE_OF = 32
+
 # Images to use per minibatch
 __C.TRAIN.IMS_PER_BATCH = 2
 
@@ -140,6 +143,9 @@ __C.TEST.SCALES = (600,)
 
 # Max pixel size of the longest side of a scaled input image
 __C.TEST.MAX_SIZE = 1000
+
+# Resize test images so that its width and height are multiples of ...
+__C.TEST.SCALE_MULTIPLE_OF = 32
 
 # Overlap threshold used for non-maximum suppression (suppress boxes with
 # IoU >= this threshold)
