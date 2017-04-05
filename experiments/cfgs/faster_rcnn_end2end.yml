@@ -28,5 +28,8 @@ TRAIN:
 TEST:
   HAS_RPN: True
   SCALE_MULTIPLE_OF: 32
+  MAX_SIZE: 2000
   SCALES:
     - 640
+  BBOX_VOTE: True
+  
