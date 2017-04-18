@@ -388,9 +388,9 @@ layer {
 layer {
   name: "downsample"
   type: "Pooling"
-  bottom: "conv1_2"
+  bottom: "conv3_3"
   top: "downsample"
-  pooling_param { kernel_size: 4 stride: 4 pad: 0 pool: MAX }
+  pooling_param { kernel_size: 2 stride: 2 pad: 0 pool: MAX }
 }
 layer {
     name: "upsample"
@@ -399,76 +399,67 @@ layer {
     top: "upsample"
     param { lr_mult: 0 decay_mult: 0}
     convolution_param {
-        num_output: 512 kernel_size: 4 pad: 0 stride: 4 group: 512
+        num_output: 512 kernel_size: 4 pad: 1 stride: 2 group: 512
         weight_filler: {type: "bilinear" } 
         bias_term: false
     }    
 }
 
 layer {
-  name: "convf_downsample"
-  type: "Convolution"
+  name: "concat"
   bottom: "downsample"
-  top: "convf_downsample"
-  param { lr_mult: 1.0 decay_mult: 1.0 }
-  param { lr_mult: 2.0 decay_mult: 0 }
-  convolution_param {
-    num_output: 64 kernel_size: 5 pad: 0 stride: 1
-    weight_filler { type: "gaussian" std: 0.01 }
-    bias_filler { type: "constant" value: 0 }
-  }
-}
-layer {
-  name: "relu_downsample"
-  type: "ReLU"
-  bottom: "convf_downsample"
-  top: "convf_downsample"
-}
-layer {
-  name: "convf_conv3_3"
-  type: "Convolution"
-  bottom: "conv3_3"
-  top: "convf_conv3_3"
-  param { lr_mult: 1.0 decay_mult: 1.0 }
-  param { lr_mult: 2.0 decay_mult: 0 }
-  convolution_param {
-    num_output: 64 kernel_size: 5 pad: 0 stride: 1
-    weight_filler { type: "gaussian" std: 0.01 }
-    bias_filler { type: "constant" value: 0 }
-  }
-}
-layer {
-  name: "relu_conv3_3"
-  type: "ReLU"
-  bottom: "convf_conv3_3"
-  top: "convf_conv3_3"
-}
-layer {
-  name: "convf_upsample"
-  type: "Convolution"
+  bottom: "conv4_3"
   bottom: "upsample"
-  top: "convf_upsample"
-  param { lr_mult: 1.0 decay_mult: 1.0 }
-  param { lr_mult: 2.0 decay_mult: 0 }
-  convolution_param {
-    num_output: 64 kernel_size: 5 pad: 0 stride: 1
-    weight_filler { type: "gaussian" std: 0.01 }
-    bias_filler { type: "constant" value: 0 }
-  }
-}
-layer {
-  name: "relu_upsample"
-  type: "ReLU"
-  bottom: "convf_upsample"
-  top: "convf_upsample"
+  top: "concat"
+  type: "Concat"
+  concat_param { axis: 1 }
 }
 
 layer {
-  name: "concat"
-  bottom: "convf_downsample"
-  bottom: "convf_conv3_3"
-  bottom: "convf_upsample"
-  top: "concat"
+  name: "convf_rpn"
+  type: "Convolution"
+  bottom: "concat"
+  top: "convf_rpn"
+  param { lr_mult: 1.0 decay_mult: 1.0 }
+  param { lr_mult: 2.0 decay_mult: 0 }
+  convolution_param {
+    num_output: 128 kernel_size: 1 pad: 0 stride: 1
+    weight_filler { type: "gaussian" std: 0.01 }
+    bias_filler { type: "constant" value: 0 }
+  }
+}
+layer {
+  name: "reluf_rpn"
+  type: "ReLU"
+  bottom: "convf_rpn"
+  top: "convf_rpn"
+}
+
+layer {
+  name: "convf_2"
+  type: "Convolution"
+  bottom: "concat"
+  top: "convf_2"
+  param { lr_mult: 1.0 decay_mult: 1.0 }
+  param { lr_mult: 2.0 decay_mult: 0 }
+  convolution_param {
+    num_output: 384 kernel_size: 1 pad: 0 stride: 1
+    weight_filler { type: "gaussian" std: 0.01 }
+    bias_filler { type: "constant" value: 0 }
+  }
+}
+layer {
+  name: "reluf_2"
+  type: "ReLU"
+  bottom: "convf_2"
+  top: "convf_2"
+}
+
+layer {
+  name: "concat_convf"
+  bottom: "convf_rpn"
+  bottom: "convf_2"
+  top: "convf"
   type: "Concat"
   concat_param { axis: 1 }
 }
@@ -478,7 +469,7 @@ layer {
 layer {
   name: "rpn_conv/3x3"
   type: "Convolution"
-  bottom: "concat"
+  bottom: "convf_rpn"
   top: "rpn/output"
   param { lr_mult: 1.0 decay_mult: 1.0 }
   param { lr_mult: 2.0 decay_mult: 0 }
@@ -566,7 +557,7 @@ layer {
 layer {
   name: "roi_pool5"
   type: "ROIPooling"
-  bottom: "concat"
+  bottom: "convf"
   bottom: "rois"
   top: "pool5"
   roi_pooling_param {
@@ -576,7 +567,7 @@ layer {
   }
 }
 layer {
-  name: "fc6_new"
+  name: "fc6"
   type: "InnerProduct"
   bottom: "pool5"
   top: "fc6"
@@ -608,7 +599,7 @@ layer {
   }
 }
 layer {
-  name: "fc7_new"
+  name: "fc7"
   type: "InnerProduct"
   bottom: "fc6"
   top: "fc7"

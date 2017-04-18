@@ -404,8 +404,8 @@ layer {
   param { lr_mult: 2.0 decay_mult: 0 }
   convolution_param {
     num_output: 128 kernel_size: 1 pad: 0 stride: 1
-    weight_filler { type: "xavier" std: 0.1 }
-    bias_filler { type: "constant" value: 0.1 }
+    weight_filler { type: "gaussian" std: 0.01 }
+    bias_filler { type: "constant" value: 0 }
   }
 }
 layer {
@@ -424,8 +424,8 @@ layer {
   param { lr_mult: 2.0 decay_mult: 0 }
   convolution_param {
     num_output: 384 kernel_size: 1 pad: 0 stride: 1
-    weight_filler { type: "xavier" std: 0.1 }
-    bias_filler { type: "constant" value: 0.1 }
+    weight_filler { type: "gaussian" std: 0.01 }
+    bias_filler { type: "constant" value: 0 }
   }
 }
 layer {
